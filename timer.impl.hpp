@@ -9,12 +9,6 @@
 #include "json.hpp"
 #include "timer.h"
 
-#ifdef __GNUC__
-#define unused __attribute__((unused))
-#else // __GNUC__
-#define unused
-#endif // __GNUC__
-
 using json = nlohmann::json;
 
 using timestamp_t = std::chrono::time_point<std::chrono::high_resolution_clock>;
