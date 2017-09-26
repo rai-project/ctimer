@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 #include <type_traits>
 #include <vector>
 
@@ -26,13 +27,17 @@ static double elapsed_time(timestamp_t start, timestamp_t end) {
   return elapsed;
 }
 
-static double to_nanoseconds(timestamp_t t) {
+static uint64_t to_nanoseconds(timestamp_t t) {
   const auto duration = t.time_since_epoch();
-  return std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
+  return static_cast<uint64_t>(
+      std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
 }
 
 struct profile_entry {
-  profile_entry(std::string name) : name_(name) { start(); }
+  profile_entry(std::string name = "", std::string metadata = "")
+      : name_(name), metadata_(metadata) {
+    start();
+  }
   ~profile_entry() {}
 
   error_t start() {
@@ -50,19 +55,28 @@ struct profile_entry {
     const auto end_ns = to_nanoseconds(end_);
     return json{
         {"name", name_},
+        {"metadata", metadata_},
         {"start", start_ns},
         {"end", end_ns},
     };
   }
 
+  void dump() {
+    const auto j = this->to_json();
+    std::cout << j.dump(2) << "\n";
+  }
+
 private:
-  std::string name_{};
+  std::string name_{""};
+  std::string metadata_{""};
   timestamp_t start_{}, end_{};
 };
 
 struct profile {
-  profile() : name_("") { start(); }
-  profile(std::string name) : name_(name) { start(); }
+  profile(std::string name = "", std::string metadata = "")
+      : name_(name), metadata_(metadata) {
+    start();
+  }
   ~profile() { this->reset(); }
 
   error_t start() {
@@ -97,11 +111,14 @@ struct profile {
       elements.emplace_back(e->to_json());
     }
     return json{
-        {"name", name_},
-        {"start", start_ns},
-        {"end", end_ns},
-        {"elements", elements},
+        {"name", name_}, {"metadata", metadata_}, {"start", start_ns},
+        {"end", end_ns}, {"elements", elements},
     };
+  }
+
+  void dump() {
+    const auto j = this->to_json();
+    std::cout << j.dump(2) << "\n";
   }
 
   std::string read() {
@@ -111,6 +128,7 @@ struct profile {
 
 private:
   std::string name_{""};
+  std::string metadata_{""};
   std::vector<profile_entry *> entries_{};
   timestamp_t start_{}, end_{};
 };
@@ -123,8 +141,11 @@ static profile_entry *to_profile_entry(ProfileEntry prof) {
   return reinterpret_cast<profile_entry *>(prof);
 }
 
-Profile ProfileNew(const char *name) {
-  auto prof = new profile(std::string(name));
+Profile ProfileNew(const char *name, const char *metadata) {
+  if (metadata == nullptr) {
+    metadata = "";
+  }
+  auto prof = new profile(std::string(name), std::string(metadata));
   return reinterpret_cast<Profile>(prof);
 }
 
@@ -161,9 +182,16 @@ error_t ProfileAddEntry(Profile prof, ProfileEntry entry) {
   auto e = to_profile_entry(entry);
   return p->add(e);
 }
+void ProfileDump(Profile prof) {
+  auto p = to_profile(prof);
+  p->dump();
+}
 
-ProfileEntry ProfileEntryNew(const char *name) {
-  auto entry = new profile_entry(std::string(name));
+ProfileEntry ProfileEntryNew(const char *name, const char *metadata) {
+  if (metadata == nullptr) {
+    metadata = "";
+  }
+  auto entry = new profile_entry(std::string(name), std::string(metadata));
   return reinterpret_cast<ProfileEntry>(entry);
 }
 

@@ -14,15 +14,16 @@ struct profile;
 typedef profile *Profile;
 typedef profile_entry *ProfileEntry;
 
-Profile ProfileNew(const char *name);
+Profile ProfileNew(const char *name, const char *metadata);
 error_t ProfileStart(Profile prof);
 error_t ProfileEnd(Profile prof);
 error_t ProfileDelete(Profile prof);
 error_t ProfileReset(Profile prof);
 char *ProfileRead(Profile prof);
+void ProfileDump(Profile prof);
 error_t ProfileAddEntry(Profile prof, ProfileEntry entry);
 
-ProfileEntry ProfileEntryNew(const char *name);
+ProfileEntry ProfileEntryNew(const char *name, const char *metadata);
 error_t ProfileEntryStart(ProfileEntry prof);
 error_t ProfileEntryEnd(ProfileEntry prof);
 

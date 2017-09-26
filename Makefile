@@ -7,7 +7,8 @@ DEPS=$(patsubst %.o,%.d,$(OBJECTS))
 CXX = g++
 CXXFLAGS= -std=c++11 -g -fno-omit-frame-pointer \
 					-Wall -Wextra -Wshadow -Wpedantic -fPIC \
-					-Wno-unused-parameter -Wno-unused-function
+					-Wno-unused-parameter -Wno-unused-function \
+					-Wno-c++11-extensions -Wno-deprecated
 
 INC = -I.
 LIB = -L/usr/local/lib
