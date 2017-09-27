@@ -85,6 +85,7 @@ struct profile {
   }
 
   error_t reset() {
+    std::lock_guard<std::mutex> lock(mut_);
     for (auto e : entries_) {
       delete e;
     }
@@ -99,6 +100,8 @@ struct profile {
   }
 
   json to_json() {
+    std::lock_guard<std::mutex> lock(mut_);
+    
     const auto start_ns = to_nanoseconds(start_);
     const auto end_ns = to_nanoseconds(end_);
 
