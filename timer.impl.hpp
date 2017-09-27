@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdint>
 #include <iostream>
+#include <mutex>
 #include <type_traits>
 #include <vector>
 
@@ -92,6 +93,7 @@ struct profile {
   }
 
   error_t add(profile_entry *entry) {
+    std::lock_guard<std::mutex> lock(mut_);
     entries_.emplace_back(entry);
     return success;
   }
@@ -125,6 +127,7 @@ private:
   std::string metadata_{""};
   std::vector<profile_entry *> entries_{};
   timestamp_t start_{}, end_{};
+  std::mutex mut_;
 };
 
 static profile *to_profile(Profile prof) {
