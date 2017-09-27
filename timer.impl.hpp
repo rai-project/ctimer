@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <iostream>
 #include <mutex>
+#include <thread>
 #include <type_traits>
 #include <vector>
 
@@ -48,11 +49,10 @@ struct profile_entry {
   json to_json() {
     const auto start_ns = to_nanoseconds(start_);
     const auto end_ns = to_nanoseconds(end_);
+    uint64_t id = std::hash<std::thread::id>()(std::this_thread::get_id());
     return json{
-        {"name", name_},
-        {"metadata", metadata_},
-        {"start", start_ns},
-        {"end", end_ns},
+        {"name", name_}, {"metadata", metadata_}, {"start", start_ns},
+        {"end", end_ns}, {"thread_id", id},
     };
   }
 
