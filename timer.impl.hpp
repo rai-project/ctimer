@@ -13,9 +13,9 @@
 
 using json = nlohmann::json;
 
-using timestamp_t = std::chrono::time_point<std::chrono::high_resolution_clock>;
+using timestamp_t = std::chrono::time_point<std::chrono::system_clock>;
 
-static timestamp_t now() { return std::chrono::high_resolution_clock::now(); }
+static timestamp_t now() { return std::chrono::system_clock::now(); }
 
 static double elapsed_time(timestamp_t start, timestamp_t end) {
   const auto elapsed =
@@ -101,7 +101,7 @@ struct profile {
 
   json to_json() {
     std::lock_guard<std::mutex> lock(mut_);
-    
+
     const auto start_ns = to_nanoseconds(start_);
     const auto end_ns = to_nanoseconds(end_);
 
