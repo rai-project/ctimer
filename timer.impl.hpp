@@ -138,7 +138,7 @@ static profile_entry *to_profile_entry(ProfileEntry prof) {
   return reinterpret_cast<profile_entry *>(prof);
 }
 
-Profile ProfileNew(const char *name, const char *metadata) {
+EXTERN_C Profile ProfileNew(const char *name, const char *metadata) {
   if (metadata == nullptr) {
     metadata = "";
   }
@@ -146,16 +146,17 @@ Profile ProfileNew(const char *name, const char *metadata) {
   return reinterpret_cast<Profile>(prof);
 }
 
-error_t ProfileStart(Profile prof) {
+EXTERN_C error_t ProfileStart(Profile prof) {
   auto p = to_profile(prof);
   return p->start();
 }
 
-error_t ProfileEnd(Profile prof) {
+EXTERN_C error_t ProfileEnd(Profile prof) {
   auto p = to_profile(prof);
   return p->end();
 }
-error_t ProfileDelete(Profile prof) {
+
+EXTERN_C error_t ProfileDelete(Profile prof) {
   auto p = to_profile(prof);
   if (p == nullptr) {
     return error_invalid_memory;
@@ -164,27 +165,30 @@ error_t ProfileDelete(Profile prof) {
   return success;
 }
 
-error_t ProfileReset(Profile prof) {
+EXTERN_C error_t ProfileReset(Profile prof) {
   auto p = to_profile(prof);
   return p->reset();
 }
-char *ProfileRead(Profile prof) {
+
+EXTERN_C char *ProfileRead(Profile prof) {
   auto p = to_profile(prof);
   const auto s = p->read();
   const auto cstr = s.c_str();
   return strdup(cstr);
 }
-error_t ProfileAddEntry(Profile prof, ProfileEntry entry) {
+
+EXTERN_C error_t ProfileAddEntry(Profile prof, ProfileEntry entry) {
   auto p = to_profile(prof);
   auto e = to_profile_entry(entry);
   return p->add(e);
 }
-void ProfileDump(Profile prof) {
+
+EXTERN_C void ProfileDump(Profile prof) {
   auto p = to_profile(prof);
   p->dump();
 }
 
-ProfileEntry ProfileEntryNew(const char *name, const char *metadata) {
+EXTERN_C ProfileEntry ProfileEntryNew(const char *name, const char *metadata) {
   if (metadata == nullptr) {
     metadata = "";
   }
@@ -192,11 +196,12 @@ ProfileEntry ProfileEntryNew(const char *name, const char *metadata) {
   return reinterpret_cast<ProfileEntry>(entry);
 }
 
-error_t ProfileEntryStart(ProfileEntry prof) {
+EXTERN_C error_t ProfileEntryStart(ProfileEntry prof) {
   auto e = to_profile_entry(prof);
   return e->start();
 }
-error_t ProfileEntryEnd(ProfileEntry prof) {
+
+EXTERN_C error_t ProfileEntryEnd(ProfileEntry prof) {
   auto e = to_profile_entry(prof);
   return e->end();
 }
