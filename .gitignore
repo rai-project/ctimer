@@ -69,3 +69,5 @@ debug
 *.exe
 *.out
 *.app
+
+timer_example
